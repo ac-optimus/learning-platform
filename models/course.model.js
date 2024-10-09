@@ -43,6 +43,7 @@ courseSchema.pre('updateOne', function(next) {
     next();
 });
 
+courseSchema.index({ title: 'text', description: 'text', tags: 'text' })
 
 
 const Course = mongoose.model('Course', courseSchema);
