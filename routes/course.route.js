@@ -35,14 +35,12 @@ router.delete("/:courseId",
 
 router.get("/search",
     requiredRoles('search'),
-    auth,
     requetsBodyLog,
     courseController.search)
 
 
 router.get("/search/:courseId",
     requiredRoles('search'),
-    auth,
     requetsBodyLog,
     validate(courseValidation.getCourse),
     courseController.searchCourseById)
