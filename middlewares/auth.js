@@ -32,7 +32,7 @@ const auth = catchAsync(async (req, res, next) => {
       console.log(user)
       console.log(req.requiredRoles)
       console.log("----")
-      let rolesCheck = (new Set(user.roles)).intersection(new Set(req.requiredRoles));
+      let rolesCheck = intersection(new Set(user.roles), new Set(req.requiredRoles));
       if (rolesCheck.size == 0)
         throw new ApiError(httpStatus.UNAUTHORIZED, "User Dont have required access")
       req.user = user
@@ -43,5 +43,14 @@ const auth = catchAsync(async (req, res, next) => {
   return next()
 });
 
+function intersection(setA, setB) {
+    const resultSet = new Set();
+    for (let item of setA) {
+        if (setB.has(item)) {
+            resultSet.add(item);
+        }
+    }
+    return resultSet;
+  }
 
 module.exports = auth;
