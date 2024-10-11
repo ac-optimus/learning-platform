@@ -28,6 +28,10 @@ const auth = catchAsync(async (req, res, next) => {
       const authHeader = req.headers.authorization;
       const token = authHeader && authHeader.split(' ')[1];
       let user = await isAuthUser(token, req.requiredRoles);
+      console.log("----")
+      console.log(user)
+      console.log(req.requiredRoles)
+      console.log("----")
       let rolesCheck = (new Set(user.roles)).intersection(new Set(req.requiredRoles));
       if (rolesCheck.size == 0)
         throw new ApiError(httpStatus.UNAUTHORIZED, "User Dont have required access")
