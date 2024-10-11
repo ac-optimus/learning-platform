@@ -1,7 +1,7 @@
 const httpStatus = require("http-status");
-const catchAsync = require("../utils/catchAsync").default;
+const catchAsync = require("../utils/catchAsync");
 const { roles } = require('../config/roles');
-const ApiError = require("../utils/ApiError").default;
+const ApiError = require("../utils/ApiError");
 
 
 const roleRouteMap = {create: [roles.ADMIN, roles.CREATOR],

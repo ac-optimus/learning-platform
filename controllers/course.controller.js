@@ -1,7 +1,7 @@
 const httpStatus = require("http-status");
 const courseService = require("../services/course.service");
-const { default: ApiError } = require("../utils/ApiError");
-const catchAsync = require("../utils/catchAsync").default;
+const  ApiError  = require("../utils/ApiError");
+const catchAsync = require("../utils/catchAsync");
 
 
 /**

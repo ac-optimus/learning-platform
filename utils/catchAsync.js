@@ -1,4 +1,4 @@
-function catchAsync(fn) {
+const catchAsync = (fn) => {
   return function(req, res, next) {
       Promise.resolve(fn(req, res, next)).catch((err) => {
           console.log(err)
@@ -9,4 +9,4 @@ function catchAsync(fn) {
 }
 
 
-export default catchAsync;
+module.exports = catchAsync;
