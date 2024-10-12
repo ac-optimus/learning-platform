@@ -9,6 +9,10 @@ const courseSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    shortBio: {
+        type: String,
+        required: false,
+    },
     creator: {
         type: String,
         required: true,

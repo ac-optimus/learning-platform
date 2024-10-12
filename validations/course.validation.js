@@ -8,9 +8,10 @@ const courseCreate = {
       description: Joi.string().required(),
       creator: Joi.string().required(),
       tags: Joi.array().items(Joi.string()),
-      price: Joi.number(),
+      price: Joi.number().required(),
       chapterIds: Joi.array().items(Joi.string()),
-      isPublished: Joi.string()
+      isPublished: Joi.string(),
+      shortBio: Joi.string()
 }).unknown(true),
 };
 

@@ -53,9 +53,13 @@ const update = catchAsync(async (req, res) => {
  * search course with/ without tag filter
  */
 const search = catchAsync(async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const skip = (page - 1) * limit;
   const keyword = req.query.keyword;
   const tags = req.query.tags ? req.query.tags.split(',').map(tag => tag.trim()) : [];
-  let response = await courseService.search(keyword, tags);
+  let response = await courseService.search(keyword, tags, skip, limit);
+  response.currentPage = page;
   res.status(httpStatus.OK).send(response);
 })
 
