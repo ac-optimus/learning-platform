@@ -6,6 +6,8 @@ const courseCreate = {
     body: Joi.object().keys({
       title: Joi.string().required(),
       description: Joi.string().required(),
+      shortBio: Joi.string(),
+      image: Joi.string(),
       creator: Joi.string().required(),
       tags: Joi.array().items(Joi.string()),
       price: Joi.number().required(),
@@ -20,6 +22,8 @@ const courseUpdate = {
     courseId: Joi.string().required().custom(objectId),
     title: Joi.string(),
     description: Joi.string(),
+    shortBio: Joi.string(),
+    image: Joi.string(),
     addTags: Joi.array().items(Joi.string()),
     removeTags: Joi.array().items(Joi.string()),
     addChapters: Joi.array().items(Joi.string()),
