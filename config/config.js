@@ -9,9 +9,12 @@ const envVarsSchema = Joi.object()
     NODE_ENV: Joi.string()
       .valid("production", "development", "test")
       .required(),
-    PORT: Joi.number().default(3000),
+    PORT: Joi.number().default(3000).required(),
     MONGODB_URL: Joi.string().required().description("Mongo DB url"),
-    LOGIN_SERVICE: Joi.string()
+    LOGIN_SERVICE: Joi.string().required(),
+    CLOUDINARY_CLOUD_NAME: Joi.string().required(),
+    CLOUDINARY_API_KEY: Joi.string().required(),
+    CLOUDINARY_SECRET_KEY: Joi.string().required()
   })
   .unknown();
 
