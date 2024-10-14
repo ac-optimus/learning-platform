@@ -52,6 +52,10 @@ const requetsBodyLog = (req, res, next) => {
  *           type: string
  *         description:
  *           type: string
+ *         shortBio:
+ *           type: string
+ *         image:
+ *           type: string
  *         creator:
  *           type: string
  *         tags:
@@ -66,8 +70,6 @@ const requetsBodyLog = (req, res, next) => {
  *             type: string
  *         isPublished:
  *           type: boolean
- *         shortBio:
- *           type: string
  */
 router.post("/",
     requiredRoles('create'),
@@ -156,6 +158,8 @@ router.post("/",
  *           type: string
  *         shortBio:
  *           type: string
+ *         image:
+ *           type: string
  *         creator:
  *           type: string
  *         tags:
@@ -242,6 +246,8 @@ router.put("/",
  *         description:
  *           type: string
  *         shortBio:
+ *           type: string 
+ *         image:
  *           type: string
  *         creator:
  *           type: string
@@ -316,6 +322,8 @@ router.delete("/:courseId",
  *                       description:
  *                         type: string
  *                       shortBio:
+ *                         type: string
+ *                       image:
  *                         type: string
  *                       creator:
  *                         type: string
