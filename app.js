@@ -3,8 +3,8 @@ const httpStatus = require("http-status");
 const routes = require("./routes");
 const cors = require("cors");
 const swaggerSetup = require('./swagger');
- 
 
+ 
 const app = express();
 app.use(cors());
 app.get("/", (req, res, next) => {
