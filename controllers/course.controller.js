@@ -59,6 +59,13 @@ const search = catchAsync(async (req, res) => {
   const keyword = req.query.keyword;
   const tags = req.query.tags ? req.query.tags.split(',').map(tag => tag.trim()) : [];
   let response = await courseService.search(keyword, tags, skip, limit);
+  const allTags = new Set();
+  for (const course of response.courses) {
+    for (const tag of course.tags) {
+      allTags.add(tag)
+    }
+  }
+  response.allTags = Array.from(allTags);
   response.currentPage = page;
   res.status(httpStatus.OK).send(response);
 })
