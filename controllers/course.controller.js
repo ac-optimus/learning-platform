@@ -83,6 +83,27 @@ const searchCourseById = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).send(response)
 })
 
+const searchCourseByCreatorId = catchAsync(async (req, res) => {
+  const { creatorId } = req.params;
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const skip = (page - 1) * limit;
+
+  let response = await courseService.getCourseByCreatorId(creatorId, skip, limit)
+  const allTags = new Set();
+  for (const course of response.courses) {
+    for (const tag of course.tags) {
+      allTags.add(tag)
+    }
+  }
+  response.allTags = Array.from(allTags);
+  response.currentPage = page;
+
+  if (!response)
+    throw new ApiError(httpStatus.BAD_REQUEST, "Course not found")
+  res.status(httpStatus.OK).send(response)
+})
+
 /**
  * delete a course
  */
@@ -121,5 +142,6 @@ module.exports = {
   update,
   search,
   deleteCourse,
-  searchCourseById
+  searchCourseById,
+  searchCourseByCreatorId
 };

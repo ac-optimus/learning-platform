@@ -44,10 +44,17 @@ const getCourse = {
 }).unknown(true),
 };
 
+const getCourseByCreatorId = {
+  params: Joi.object().keys({
+    creatorId: Joi.string().required().custom(objectId)
+}).unknown(true),
+};
+
 
 module.exports = {
   courseCreate,
   courseUpdate,
   courseDelete,
-  getCourse
+  getCourse,
+  getCourseByCreatorId
 };
