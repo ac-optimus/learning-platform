@@ -59,6 +59,13 @@ const search = catchAsync(async (req, res) => {
   const keyword = req.query.keyword;
   const tags = req.query.tags ? req.query.tags.split(',').map(tag => tag.trim()) : [];
   let response = await courseService.search(keyword, tags, skip, limit);
+  const allTags = new Set();
+  for (const course of response.courses) {
+    for (const tag of course.tags) {
+      allTags.add(tag)
+    }
+  }
+  response.allTags = Array.from(allTags);
   response.currentPage = page;
   res.status(httpStatus.OK).send(response);
 })
@@ -71,6 +78,27 @@ const searchCourseById = catchAsync(async (req, res) => {
   console.log(courseId)
   let response = await courseService.getCourseByCourseId(courseId)
   console.log(response)
+  if (!response)
+    throw new ApiError(httpStatus.BAD_REQUEST, "Course not found")
+  res.status(httpStatus.OK).send(response)
+})
+
+const searchCourseByCreatorId = catchAsync(async (req, res) => {
+  const { creatorId } = req.params;
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const skip = (page - 1) * limit;
+
+  let response = await courseService.getCourseByCreatorId(creatorId, skip, limit)
+  const allTags = new Set();
+  for (const course of response.courses) {
+    for (const tag of course.tags) {
+      allTags.add(tag)
+    }
+  }
+  response.allTags = Array.from(allTags);
+  response.currentPage = page;
+
   if (!response)
     throw new ApiError(httpStatus.BAD_REQUEST, "Course not found")
   res.status(httpStatus.OK).send(response)
@@ -114,5 +142,6 @@ module.exports = {
   update,
   search,
   deleteCourse,
-  searchCourseById
+  searchCourseById,
+  searchCourseByCreatorId
 };

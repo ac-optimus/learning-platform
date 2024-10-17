@@ -313,40 +313,17 @@ router.delete("/:courseId",
  *                 courses:
  *                   type: array
  *                   items:
- *                     type: object
- *                     properties:
- *                       _id:
- *                         type: string
- *                       title:
- *                         type: string
- *                       description:
- *                         type: string
- *                       shortBio:
- *                         type: string
- *                       image:
- *                         type: string
- *                       creator:
- *                         type: string
- *                       tags:
- *                         type: array
- *                         items:
- *                           type: string
- *                       price:
- *                         type: number
- *                       chapterIds:
- *                         type: array
- *                         items:
- *                           type: string
- *                       isPublished:
- *                         type: boolean
+ *                     $ref: '#/components/schemas/Course'
  *                 totalPages:
  *                   type: integer
  *                 currentPage:
  *                   type: integer
+ *                 allTags:
+ *                   type: array
+ *                   items:
+ *                     type: string
  *       400:
  *         $ref: '#/components/responses/BadRequest'
- *       401:
- *         $ref: '#/components/responses/Unauthorized'
  */
 router.get("/search",
     requiredRoles('search'),
@@ -377,8 +354,6 @@ router.get("/search",
  *               $ref: '#/components/schemas/Course'
  *       400:
  *         $ref: '#/components/responses/BadRequest'
- *       401:
- *         $ref: '#/components/responses/Unauthorized'
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
@@ -387,6 +362,67 @@ router.get("/search/:courseId",
     requetsBodyLog,
     validate(courseValidation.getCourse),
     courseController.searchCourseById)
+
+/**
+ * @swagger
+ * /v1/course/fetchCourses/{creatorId}:
+ *   get:
+ *     summary: Fetch courses by creator ID
+ *     tags: [Courses]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: creatorId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the creator to fetch courses for
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *         description: Page number for pagination
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *         description: Number of items per page
+ *     responses:
+ *       200:
+ *         description: Successful response containing courses and pagination details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 courses:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Course'
+ *                 totalPages:
+ *                   type: integer
+ *                 currentPage:
+ *                   type: integer
+ *                 allTags:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ */
+router.get("/fetchCourses/:creatorId",
+    requiredRoles('create'),
+    auth,
+    requetsBodyLog,
+    validate(courseValidation.getCourseByCreatorId),
+    courseController.searchCourseByCreatorId)
 
 
 module.exports = router;

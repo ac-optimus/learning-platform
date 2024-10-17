@@ -82,6 +82,16 @@ const getCourseByCourseId = async (courseId) => {
     return await Course.findOne({_id: courseId})
 }
 
+const getCourseByCreatorId = async (creatorId, skip, limit) => {
+    const courses = await Course.find({creator: creatorId})
+                        .skip(skip)
+                        .limit(limit);
+    const totalItems = await Course.countDocuments({creator: creatorId});
+    return {
+        courses,
+        totalPages: Math.ceil(totalItems / limit)
+    };
+}
 
 const deleteCourseById = async (courseId) => {
     return await Course.findByIdAndDelete(courseId)
@@ -93,5 +103,6 @@ module.exports = {
   update,
   search,
   getCourseByCourseId,
-  deleteCourseById
+  deleteCourseById,
+  getCourseByCreatorId
 };
