@@ -47,7 +47,8 @@ const update = catchAsync(async (req, res) => {
     isPublished = isPublished!=null ? isPublished : chapter.isPublished;
     isFree = isFree!=null ? isFree : chapter.isFree;
     chapterNumber = chapterNumber!=null ? chapterNumber : chapter.chapterNumber;
-
+    if (!chapter)
+      throw new ApiError(httpStatus.BAD_REQUEST, "Chapter not found")
     if (chapter.courseId != courseId)
       throw new ApiError(httpStatus.BAD_REQUEST, "Chapter not part of the course")
     if (chapter.creatorId != req.user._id)
