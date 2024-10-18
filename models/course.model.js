@@ -32,7 +32,8 @@ const courseSchema = new mongoose.Schema({
     },
     chapterIds: [{ 
             type: mongoose.Schema.Types.ObjectId, 
-            ref: 'Chapter' 
+            ref: 'Chapter',
+            default: []
         }],
     isPublished: {
         type: Boolean,

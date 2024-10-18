@@ -11,7 +11,23 @@ const chapterSchema = new mongoose.Schema({
     },
     isFree: {
         type: Boolean,
+        default: true,
+    },
+    courseId: {
+        type: String,
+        required: true,
+    },
+    creatorId: {
+        type: String,
+        required: true,
+    },
+    isPublished: {
+        type: Boolean,
         default: false,
+    },
+    chapterNumber: {
+        type: Number,
+        required: true,
     },
 }, {
     timestamps: true,
