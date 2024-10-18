@@ -225,13 +225,15 @@ router.delete("/:courseId/:chapterId",
 
 
 router.get("/:courseId",
-    requiredRoles('search'),
+    requiredRoles('update'),
+    auth,
     requetsBodyLog,
     validate(chapterValidation.chapterGetByCourseId),
     chapterController.getChaptersByCourseId)
 
 router.get("/:courseId/:chapterId",
-    requiredRoles('search'),
+    requiredRoles('update'),
+    auth,
     requetsBodyLog,
     validate(chapterValidation.chapterGetById),
     chapterController.getChapterById)
