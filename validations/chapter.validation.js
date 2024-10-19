@@ -8,7 +8,6 @@ const chapterCreate = {
     body: Joi.object().keys({
         title: Joi.string().required(),
         content: Joi.string().required(),
-        chapterNumber: Joi.number().required(),
         isFree: Joi.boolean(),
         isPublished: Joi.boolean()
     }),
@@ -24,7 +23,7 @@ const chapterUpdate = {
         content: Joi.string(),
         isPublished: Joi.boolean(),
         isFree: Joi.boolean(),
-        chapterNumber: Joi.number()
+        chapterNumber: Joi.number().forbidden()
     }),
 };
 

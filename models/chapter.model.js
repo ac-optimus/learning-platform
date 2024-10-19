@@ -24,11 +24,7 @@ const chapterSchema = new mongoose.Schema({
     isPublished: {
         type: Boolean,
         default: false,
-    },
-    chapterNumber: {
-        type: Number,
-        required: true,
-    },
+    }
 }, {
     timestamps: true,
 });
