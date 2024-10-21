@@ -9,7 +9,8 @@ const chapterCreate = {
         title: Joi.string().required(),
         content: Joi.string().required(),
         isFree: Joi.boolean(),
-        isPublished: Joi.boolean()
+        isPublished: Joi.boolean(),
+        chapterNumber: Joi.number()
     }),
 };
 
@@ -23,7 +24,7 @@ const chapterUpdate = {
         content: Joi.string(),
         isPublished: Joi.boolean(),
         isFree: Joi.boolean(),
-        chapterNumber: Joi.number().forbidden()
+        chapterNumber: Joi.number()
     }),
 };
 

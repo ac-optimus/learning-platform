@@ -1,20 +1,19 @@
 const { Chapter } = require("../models");
-const { ChapterIdChapterNum } = require("../models");
+
 
 const create = async (chapter) => {
     return await Chapter.create(chapter);
 }
 
-const getChapterNumberByChapterId = async (chapterId) => {
-    return await ChapterIdChapterNum.findOne({chapterId: chapterId})
+const getChapterFromChapterNumber = async (chapterNumber, courseId) => {
+    return await Chapter.findOne({chapterNumber: chapterNumber, courseId: courseId})
 }
 
-const addChapterNumber = async (chapterId, chapterNumber) => {
-    return await ChapterIdChapterNum.create({chapterId: chapterId, chapterNumber: chapterNumber})
-}
-
-const deleteChapterNumber = async (chapterId) => {
-    return await ChapterIdChapterNum.findOneAndDelete({chapterId: chapterId})
+const updateChapterNumbers = async (graterThanChapterCount) => {
+    return await Chapter.updateMany(
+        { chapterNumber: { $gt: graterThanChapterCount } },
+        { $inc: { chapterNumber: -1 } }
+    );
 }
 
 const update = async (chapterId, title, content, isPublished, isFree) => {
@@ -41,8 +40,12 @@ const deleteChapterById = async (chapterId) => {
     return await Chapter.findByIdAndDelete(chapterId)
 }
 
-const updateChapterNumber = async (chapterId, chapterNumber) => {
-    return await ChapterIdChapterNum.updateOne({chapterId: chapterId}, {chapterNumber: chapterNumber})
+const getChapterByIdAndCourseId = async (chapterId, courseId) => {
+    return await Chapter.findOne({_id: chapterId, courseId: courseId})
+}
+
+const getChapterByIdAndCourseIdAndCreatorId = async (chapterId, courseId, creatorId) => {
+    return await Chapter.findOne({_id: chapterId, courseId: courseId, creatorId: creatorId})
 }
 
 module.exports = {
@@ -51,8 +54,8 @@ module.exports = {
     getChaptersByCourseId,
     getChapterById,
     deleteChapterById,
-    getChapterNumberByChapterId,
-    addChapterNumber,
-    deleteChapterNumber,
-    updateChapterNumber
+    getChapterFromChapterNumber,
+    getChapterByIdAndCourseId,
+    getChapterByIdAndCourseIdAndCreatorId,
+    updateChapterNumbers
 }   
