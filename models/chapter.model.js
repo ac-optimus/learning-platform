@@ -28,7 +28,7 @@ const chapterSchema = new mongoose.Schema({
     chapterNumber: {
         type: Number,
         required: true,
-    },
+    }
 }, {
     timestamps: true,
 });

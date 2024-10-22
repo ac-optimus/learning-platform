@@ -8,9 +8,9 @@ const chapterCreate = {
     body: Joi.object().keys({
         title: Joi.string().required(),
         content: Joi.string().required(),
-        chapterNumber: Joi.number().required(),
         isFree: Joi.boolean(),
-        isPublished: Joi.boolean()
+        isPublished: Joi.boolean(),
+        chapterNumber: Joi.number()
     }),
 };
 
