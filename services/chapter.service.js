@@ -48,6 +48,10 @@ const getChapterByIdAndCourseIdAndCreatorId = async (chapterId, courseId, creato
     return await Chapter.findOne({_id: chapterId, courseId: courseId, creatorId: creatorId})
 }
 
+const deleteChapterByCourseId = async (courseId) => {
+    return await Chapter.deleteMany({ courseId: courseId });
+}
+
 module.exports = {
     create,
     update,
@@ -57,5 +61,6 @@ module.exports = {
     getChapterFromChapterNumber,
     getChapterByIdAndCourseId,
     getChapterByIdAndCourseIdAndCreatorId,
-    updateChapterNumbers
-}   
+    updateChapterNumbers,
+    deleteChapterByCourseId
+}

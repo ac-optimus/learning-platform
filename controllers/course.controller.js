@@ -2,7 +2,8 @@ const httpStatus = require("http-status");
 const courseService = require("../services/course.service");
 const  ApiError  = require("../utils/ApiError");
 const catchAsync = require("../utils/catchAsync");
-
+const quizService = require("../services/quiz.service");
+const chapterService = require("../services/chapter.service");
 
 /**
  * create course
@@ -104,9 +105,6 @@ const searchCourseByCreatorId = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).send(response)
 })
 
-/**
- * delete a course
- */
 let getObejectIdsFromIds = (ids) => {
   try {
     ids = ids.map(id => new ObjectId(id));
@@ -131,6 +129,13 @@ const updateCourseTags = (course, addTags, removeTags) => {
 const deleteCourse = catchAsync(async (req, res) => {
   const { courseId } = req.params;
   let response = await courseService.deleteCourseById(courseId);
+  const deleteQuiz = await quizService.deleteQuizByCourseId(courseId);
+  if (!deleteQuiz)
+    throw new ApiError(httpStatus.BAD_REQUEST, "Can not delete quizes for this course")
+  const deleteChapter = await chapterService.deleteChapterByCourseId(courseId);
+  if (!deleteChapter)
+    throw new ApiError(httpStatus.BAD_REQUEST, "Can not delete chapters for this course")
+
   if (!response)
     throw new ApiError(httpStatus.BAD_REQUEST, "Course not found")
   res.status(httpStatus.OK).send(response);

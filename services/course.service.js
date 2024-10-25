@@ -97,6 +97,14 @@ const deleteCourseById = async (courseId) => {
     return await Course.findByIdAndDelete(courseId)
 }
 
+const removeQuizFromCourse = async (courseId, quizId) => {
+    return await Course.updateOne({_id: courseId}, {$pull: {quizIds: quizId}})
+}
+
+const addQuizToCourse = async (courseId, quizId) => {
+    return await Course.updateOne({_id: courseId}, {$push: {quizIds: quizId}})
+}
+
 
 module.exports = {
   create,
@@ -104,5 +112,7 @@ module.exports = {
   search,
   getCourseByCourseId,
   deleteCourseById,
-  getCourseByCreatorId
+  getCourseByCreatorId,
+  removeQuizFromCourse,
+  addQuizToCourse
 };
