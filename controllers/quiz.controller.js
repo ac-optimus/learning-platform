@@ -1,10 +1,10 @@
 const ApiError = require('../utils/ApiError');
 const httpStatus = require('http-status');
 const quizService = require('../services/quiz.service');
-const Quiz = require('../models/quiz.model');
 const courseService = require('../services/course.service');
 const questionService = require('../services/question.service');
 const catchAsync = require('../utils/catchAsync');
+const questionController = require('./question.controller');
 
 
 /**
@@ -91,10 +91,45 @@ const getQuizsByCourseId = catchAsync(async (req, res) => {
     res.status(httpStatus.OK).send(response);
 }); 
 
+const submitQuiz = catchAsync(async (req, res) => {
+    const { courseId, quizId } = req.params;
+    const quiz = await quizService.getQuizById(quizId);
+    if (!quiz) {
+        throw new ApiError(httpStatus.NOT_FOUND, "Quiz not found");
+    }
+    if (quiz.courseId.toString() !== courseId.toString()) {
+        throw new ApiError(httpStatus.NOT_FOUND, "Quiz not part of passed course.");
+    }
+    // itereate this for all the questionIds in quiz
+    if (req.body.answers.length !== quiz.questionIds.length) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Answers not provided for all the questions");
+    }
+
+    const submissions = [];
+    const learnerAnswers = req.body.answers;
+    // itereate over all questionids and solutions as well which js part of req.body.answers
+    for (const answer of learnerAnswers) {
+        const submission = await questionController.checkSubmission(answer.questionId, answer.answer);
+        submissions.push(submission);
+    }   
+    const response = await quizService.submitQuiz(submissions, quizId, courseId, req.user._id);
+    res.status(httpStatus.OK).send(response);
+});
+
+const getSubmissions = catchAsync(async (req, res) => {
+    const { courseId, quizId } = req.params;
+    const learnerId = req.user._id;
+    console.log(quizId, courseId, learnerId);
+    const response = await quizService.getSubmissions(quizId, courseId, learnerId);
+    res.status(httpStatus.OK).send(response);
+});
+
+
 module.exports = {
     createQuiz,
     getQuizById,
     deleteQuiz,
-    getQuizsByCourseId
+    getQuizsByCourseId,
+    submitQuiz,
+    getSubmissions
 };
-

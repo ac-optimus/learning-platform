@@ -30,10 +30,32 @@ const quizGetByCourseId = {
     }),
 };
 
+const quizSubmit = {
+    params: Joi.object().keys({
+        courseId: Joi.string().required().custom(objectId),
+        quizId: Joi.string().required().custom(objectId)
+    }),
+    body: Joi.object().keys({
+        answers: Joi.array().items(Joi.object().keys({  
+            questionId: Joi.string().required().custom(objectId),
+            answer: Joi.alternatives().try(Joi.string(), Joi.array().items(Joi.string()))
+        })).required()
+    })
+};
+
+const quizGetSubmissions = {
+    params: Joi.object().keys({
+        courseId: Joi.string().required().custom(objectId),
+        quizId: Joi.string().required().custom(objectId)
+    }),
+};
+
 
 module.exports = { 
     quizCreate,
     quizDelete,
     quizGetById,
-    quizGetByCourseId
+    quizGetByCourseId,
+    quizSubmit,
+    quizGetSubmissions
 };

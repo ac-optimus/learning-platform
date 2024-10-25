@@ -1,6 +1,5 @@
-const httpStatus = require('http-status');
-const ApiError = require('../utils/ApiError');
-const {Quiz} = require('../models/quiz.model');
+const { Quiz } = require('../models/quiz.model');
+const { Submission } = require('../models/submission.model');
 
 
 const createQuiz = async (quiz) => {
@@ -36,6 +35,15 @@ const deleteQuizByCourseId = async (courseId) => {
     return await Quiz.deleteMany({ courseId });
 };
 
+const submitQuiz = async (submissions, quizId, courseId, learnerId) => {
+    return await Submission.create({ quizId: quizId, courseId: courseId, 
+                                        submissions: submissions, learnerId: learnerId });
+};
+
+const getSubmissions = async (quizId, courseId, learnerId) => {
+    return await Submission.find({ quizId: quizId, courseId: courseId, learnerId: learnerId });
+};
+
 
 module.exports = {
     createQuiz,
@@ -44,5 +52,7 @@ module.exports = {
     getQuizsByCourseId,
     removeQuestionFromQuiz,
     addQuestionToQuiz,
-    deleteQuizByCourseId
+    deleteQuizByCourseId,
+    submitQuiz,
+    getSubmissions
 };

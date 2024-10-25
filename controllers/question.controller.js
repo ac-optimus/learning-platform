@@ -5,7 +5,6 @@ const questionService = require('../services/question.service');
 const courseService = require('../services/course.service');
 const quizService = require('../services/quiz.service');
 const QuestionType = require('../enums/questiontype');
-const { array } = require('joi');
 const mongoose = require('mongoose');
 
 
@@ -170,7 +169,53 @@ const validationSolution = (questionType, solution) => {
     } else {
         throw new ApiError(httpStatus.BAD_REQUEST, "Invalid questionType provided.");
     }
-}; 
+};
+
+const checkSubmission = async (questionId, answer) => {
+    const question = await questionService.getQuestionById(questionId);
+    if (!question) {
+        throw new ApiError(httpStatus.NOT_FOUND, "Question not found");
+    }
+
+    let submission = {
+        questionIds: question._id,
+        answer: answer
+    };
+    if (question.questionType === QuestionType.SINGLE_CHOICE) {
+        if (typeof answer !== 'string') {
+            throw new ApiError(httpStatus.BAD_REQUEST, "For SINGLE_CHOICE type, answer must be a string.");
+        }
+        if (!question.solution.options.includes(answer)) {
+            throw new ApiError(httpStatus.BAD_REQUEST, "For SINGLE_CHOICE type, answer must be one of the options provided.");
+        }
+        if (answer !== question.solution.solution) {
+            submission.isCorrect = false;
+        } else {
+            submission.isCorrect = true;
+        }
+    }
+    if (question.questionType === QuestionType.MULTIPLE_CHOICE) {
+        if (!Array.isArray(answer)) {
+            throw new ApiError(httpStatus.BAD_REQUEST, "For MULTIPLE_CHOICE type, answer must be an array of strings.");
+        }
+        if (!question.solution.solution.every(sol => answer.includes(sol))) {
+            submission.isCorrect = false;
+        } else {
+            submission.isCorrect = true;
+        }
+    }
+    if (question.questionType === QuestionType.TEXT) {
+        if (typeof answer !== 'string') {
+            throw new ApiError(httpStatus.BAD_REQUEST, "For TEXT type, answer must be a string.");
+        }
+        if (answer !== question.solution.solution) {
+            submission.isCorrect = false;
+        } else {
+            submission.isCorrect = true;
+        }
+    }
+    return submission;
+}
 
 
 module.exports = {
@@ -179,4 +224,5 @@ module.exports = {
     getQuestionById,
     updateQuestion,
     deleteQuestion,
+    checkSubmission
 };

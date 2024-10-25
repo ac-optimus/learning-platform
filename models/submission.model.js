@@ -1,19 +1,41 @@
 const mongoose = require('mongoose')
-const { Schema } = mongoose;
+
 
 const submissionSchema = new mongoose.Schema({
-    questionIds: { 
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: 'Question'
+    quizId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Quiz',
+        required: true
     },
-    answer: {
-        type: Schema.Types.Mixed,
+    submissions: {
+        type: [{
+            questionIds: { 
+                type: mongoose.Schema.Types.ObjectId, 
+                ref: 'Question',
+                required: true
+            },
+            answer: {
+                type: mongoose.Schema.Types.Mixed,
+                required: true
+            },
+            isCorrect: {
+                type: Boolean,
+                required: true
+            }
+        }],
+    },
+    courseId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Course',
         required: true
     },
     learnerId: {
-        type: mongoose.Schema.Types.ObjectId
+        type: mongoose.Schema.Types.ObjectId,
+        required: true
     }
-})
+}, { 
+    timestamps: true 
+});
 
 
 const Submission = mongoose.model('Submission', submissionSchema);
