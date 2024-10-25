@@ -23,8 +23,7 @@ const courseSchema = new mongoose.Schema({
     },
     tags: {
         type: [String],
-        required: false,
-        unique: true
+        required: false
     },
     price: {
         type: Number,
@@ -35,10 +34,17 @@ const courseSchema = new mongoose.Schema({
             ref: 'Chapter',
             default: []
         }],
+    quizIds: [{ 
+            type: mongoose.Schema.Types.ObjectId, 
+            ref: 'Quiz',
+            default: []
+        }],
     isPublished: {
         type: Boolean,
         default: false,
     },
+}, {
+    timestamps: true,
 });
 
 courseSchema.pre('save', function(next) {
