@@ -217,4 +217,25 @@ router.get("/submissions/:courseId/:quizId",
     validate(quizValidation.quizGetSubmissions),
     quizController.getSubmissions)
 
+router.put("/:courseId/:quizId",
+    requiredRoles('update'),
+    auth,
+    requetsBodyLog,
+    validate(quizValidation.quizUpdate),
+    quizController.updateQuiz)
+
+router.get("/learner/:courseId/:quizId",
+    requiredRoles('update'),
+    auth,
+    requetsBodyLog,
+    validate(quizValidation.quizGetForLearner),
+    quizController.getQuizForLearner)
+
+router.put("/overwrite-questions/:courseId/:quizId",
+    requiredRoles('update'),
+    auth,
+    requetsBodyLog,
+    validate(quizValidation.quizOverwriteQuestions),
+    quizController.overwriteQuestions)
+
 module.exports = router;

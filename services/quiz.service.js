@@ -1,37 +1,56 @@
 const { Quiz } = require('../models/quiz.model');
 const { Submission } = require('../models/submission.model');
+const { Question } = require('../models/question.model');
 
 
-const createQuiz = async (quiz) => {
-    return await Quiz.create(quiz);
+const createQuiz = async (quiz, quizId) => {
+    const createdQuiz = await Quiz.create({...quiz, _id: quizId});
+    const updatedQuiz = await Quiz.findById(createdQuiz._id).populate('questions');
+    return updatedQuiz;
 };
 
 const getQuizById = async (quizId) => {
-    return Quiz.findById(quizId);
+    const updatedQuiz = await Quiz.findById(quizId).populate('questions');
+    return updatedQuiz;
 };
 
 const deleteQuiz = async (quizId) => {
-    return await Quiz.findByIdAndDelete(quizId)
+    const quiz = await getQuizById(quizId);
+    await Question.deleteMany({ quizId: quizId });
+    await Quiz.findByIdAndDelete(quizId);
+    return quiz;
 };
 
 const getQuizsByCourseId = async (courseId) => {
-    return await Quiz.find({courseId});
+    const updatedQuizs = await Quiz.find({courseId}).populate('questions');
+    return updatedQuizs;
 };
 
-const removeQuestionFromQuiz = async (quizId, questionId) => {
+const removeQuestionFromQuiz = async (quizId, question) => {
+    await Question.findByIdAndDelete(question.questionId);
     return await Quiz.updateOne(
         { _id: quizId },
-        { $pull: { questionIds: questionId } }
+        { $pull: { questions: question.questionId } }
+    );  
+};
+const addQuestionToQuiz = async (quizId, question) => {
+    await Question.findByIdAndUpdate(question.questionId, { quizId: quizId });
+    return await Quiz.updateOne(
+        { _id: quizId },
+        { $push: { questions: question.questionId } }
     );
 };
-const addQuestionToQuiz = async (quizId, questionId) => {
-    return await Quiz.updateOne(
+
+const updateQuizQuestions = async (quizId, questions) => {
+    await Quiz.updateOne(
         { _id: quizId },
-        { $push: { questionIds: questionId } }
+        { $set: { questions: questions } }
     );
+    return await Quiz.findById(quizId).populate('questions');
 };
 
 const deleteQuizByCourseId = async (courseId) => {
+    await Question.deleteMany({ courseId: courseId });
     return await Quiz.deleteMany({ courseId });
 };
 
@@ -44,6 +63,16 @@ const getSubmissions = async (quizId, courseId, learnerId) => {
     return await Submission.find({ quizId: quizId, courseId: courseId, learnerId: learnerId });
 };
 
+const updateQuiz = async (quizId, courseId, title, description) => {
+    await Quiz.updateOne({ _id: quizId, courseId: courseId }, 
+        { title: title, description: description });
+    return await Quiz.findById(quizId).populate('questions');
+};
+
+const overwriteQuestions = async (quizId, questions) => {
+    await Question.deleteMany({ quizId: quizId });
+    return await Question.create(questions);
+};
 
 module.exports = {
     createQuiz,
@@ -54,5 +83,8 @@ module.exports = {
     addQuestionToQuiz,
     deleteQuizByCourseId,
     submitQuiz,
-    getSubmissions
+    getSubmissions,
+    updateQuiz,
+    overwriteQuestions,
+    updateQuizQuestions
 };
