@@ -27,18 +27,18 @@ const getQuizsByCourseId = async (courseId) => {
 };
 
 const removeQuestionFromQuiz = async (quizId, question) => {
+    const updatedQuiz = await Quiz.findById(quizId);    
+    updatedQuiz.questions = updatedQuiz.questions.filter(q => q._id.toString() !== question.questionId.toString());
+    await updatedQuiz.save();
     await Question.findByIdAndDelete(question.questionId);
-    return await Quiz.updateOne(
-        { _id: quizId },
-        { $pull: { questions: question.questionId } }
-    );  
+    return updatedQuiz;
 };
+
 const addQuestionToQuiz = async (quizId, question) => {
-    await Question.findByIdAndUpdate(question.questionId, { quizId: quizId });
-    return await Quiz.updateOne(
-        { _id: quizId },
-        { $push: { questions: question.questionId } }
-    );
+    const updatedQuestion = await Question.findById(question.questionId);
+    updatedQuestion.quizId = quizId;
+    await updatedQuestion.save();
+    return await Quiz.findById(quizId).populate('questions');
 };
 
 const updateQuizQuestions = async (quizId, questions) => {
