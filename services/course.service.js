@@ -98,11 +98,15 @@ const deleteCourseById = async (courseId) => {
 }
 
 const removeQuizFromCourse = async (courseId, quizId) => {
-    return await Course.updateOne({_id: courseId}, {$pull: {quizIds: quizId}})
+    const course = await Course.findOne({_id: courseId});
+    course.quizIds = course.quizIds.filter(id => id.toString() !== quizId.toString());
+    return await course.save();
 }
 
 const addQuizToCourse = async (courseId, quizId) => {
-    return await Course.updateOne({_id: courseId}, {$push: {quizIds: quizId}})
+    const course = await Course.findOne({_id: courseId});
+    course.quizIds.push(quizId);
+    return await course.save();
 }
 
 
