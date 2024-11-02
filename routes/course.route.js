@@ -328,6 +328,7 @@ router.delete("/:courseId",
 router.get("/search",
     requiredRoles('search'),
     requetsBodyLog,
+    validate(courseValidation.searchCourse),
     courseController.search)
 
 /**
@@ -423,6 +424,11 @@ router.get("/fetchCourses/:creatorId",
     requetsBodyLog,
     validate(courseValidation.getCourseByCreatorId),
     courseController.searchCourseByCreatorId)
+
+router.get("/categoryAndTags",
+    requiredRoles('search'),
+    requetsBodyLog,
+    courseController.categoryAndTags)
 
 
 module.exports = router;

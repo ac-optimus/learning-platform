@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const CourseCategory = require('../enums/courseCategory');
 
 const courseSchema = new mongoose.Schema({
     title: {
@@ -43,6 +44,11 @@ const courseSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
+    category: {
+        type: String,
+        enum: Object.values(CourseCategory),
+        required: true
+    }
 }, {
     timestamps: true,
 });

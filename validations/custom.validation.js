@@ -1,4 +1,5 @@
 const QuestionType = require('../enums/questiontype');
+const { CourseCategory } = require('../enums/courseCategory');
 
 const objectId = (value, helpers) => {
   if (!value.match(/^[0-9a-fA-F]{24}$/)) {
@@ -14,8 +15,16 @@ const questionType = (value, helpers) => {
   return value;
 };
 
+const courseCategory = (value, helpers) => {
+  if (!Object.values(CourseCategory).includes(value.toUpperCase())) { 
+    return helpers.message(`invaid {{#label}} passed, valid categories are ${Object.values(CourseCategory).join(', ')}`);
+  }
+  return value.toUpperCase();
+};
+
 
 module.exports = {
   objectId,
-  questionType
+  questionType,
+  courseCategory
 };

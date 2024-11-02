@@ -59,7 +59,8 @@ const search = catchAsync(async (req, res) => {
   const skip = (page - 1) * limit;
   const keyword = req.query.keyword;
   const tags = req.query.tags ? req.query.tags.split(',').map(tag => tag.trim()) : [];
-  let response = await courseService.search(keyword, tags, skip, limit);
+  const category = req.query.category;
+  let response = await courseService.search(keyword, tags, category, skip, limit);
   const allTags = new Set();
   for (const course of response.courses) {
     for (const tag of course.tags) {
@@ -142,11 +143,36 @@ const deleteCourse = catchAsync(async (req, res) => {
 })
 
 
+const categoryAndTags = catchAsync(async (req, res) => {
+  const courses = await courseService.getAllCourses();
+  const categoryTagsMap = new Map();
+  courses.forEach(course => {
+    if (course.tags && course.tags.length > 0) {
+      course.tags.forEach(tag => {
+        if (!categoryTagsMap.has(course.category)) {
+          categoryTagsMap.set(course.category, []);
+        }
+        categoryTagsMap.get(course.category).push(tag);
+      });
+    }
+  });
+  categoryTagsMap.forEach((tags, category) => {
+    categoryTagsMap.set(category, [...new Set(tags)]);
+  });
+  response = Array.from(categoryTagsMap.entries()).reduce((acc, [category, tags]) => {
+    acc[category] = tags;
+    return acc;
+  }, {});
+  res.status(httpStatus.OK).send(response);
+})
+
+
 module.exports = {
   create,
   update,
   search,
   deleteCourse,
   searchCourseById,
-  searchCourseByCreatorId
+  searchCourseByCreatorId,
+  categoryAndTags
 };
