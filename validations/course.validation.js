@@ -1,6 +1,6 @@
 const Joi = require("joi");
 const { objectId } = require("./custom.validation");
-
+const { courseCategory } = require("./custom.validation");
 
 const courseCreate = {
     body: Joi.object().keys({
@@ -13,7 +13,7 @@ const courseCreate = {
       price: Joi.number().required(),
       chapterIds: Joi.array().items(Joi.string()),
       isPublished: Joi.string(),
-      shortBio: Joi.string()
+      category: Joi.string().custom(courseCategory).required()
 }).unknown(true),
 };
 
@@ -50,11 +50,17 @@ const getCourseByCreatorId = {
 }).unknown(true),
 };
 
+const searchCourse = {
+  query: Joi.object().keys({
+    category: Joi.string().custom(courseCategory)
+  }).unknown(true)
+}
 
 module.exports = {
   courseCreate,
   courseUpdate,
   courseDelete,
   getCourse,
-  getCourseByCreatorId
+  getCourseByCreatorId,
+  searchCourse
 };

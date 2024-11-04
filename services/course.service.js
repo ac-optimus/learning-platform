@@ -17,7 +17,10 @@ const update = async (courseId, title, description, tags, chapterIds, isPublishe
     return await Course.findOne({_id: courseId})
 }
 
-const search = async (keyword, tags, skip, limit) => {
+const search = async (keyword, tags, category, skip, limit) => {
+    console.log(keyword, tags, category, skip, limit)    
+    let isPublishedFilter = { isPublished: true }
+    let categoryFilter = category!=null ? { category: category } : {}
     let courses;
     let totalItems;
     let searchAllFilter = [
@@ -25,52 +28,77 @@ const search = async (keyword, tags, skip, limit) => {
         { description: { $regex: keyword, $options: 'i' } },
         { tags: { $regex: keyword, $options: 'i' } }
     ]
+
     let tagsFilter ={ tags: { $in: tags } }
 
     if (!keyword && (!tags || tags.length === 0)) {
-        courses = await Course.find({})
+        courses = await Course.find(isPublishedFilter)
+                                .find(categoryFilter)
                                 .skip(skip)
                                 .limit(limit);
-        totalItems = await Course.countDocuments({});
+        totalItems = await Course.countDocuments(isPublishedFilter)
+                                .countDocuments(categoryFilter);
 
     } else if (keyword && (!tags || tags.length === 0)) {
         // If only keyword is provided, use regex for partial matching
-        courses = await Course.find({
-            $or: searchAllFilter
+        courses = await Course
+            .find({
+                $and: [
+                    categoryFilter,
+                    isPublishedFilter,
+                    {
+                    $or: searchAllFilter
+                }
+            ]
         })
         .skip(skip)
         .limit(limit);
         totalItems = await Course.countDocuments({
-            $or: searchAllFilter
-        });
-
+            $and: [
+                categoryFilter,
+                isPublishedFilter,
+                {
+                    $or: searchAllFilter
+                }
+            ]
+        })
     } else if (tags && tags.length > 0 && !keyword) {
         // If only tags are provided
-        courses = await Course.find(tagsFilter)
+        courses = await Course.find(isPublishedFilter)
+                                .find(tagsFilter)
+                                .find(categoryFilter)
                                 .skip(skip)
                                 .limit(limit);
-        totalItems = await Course.countDocuments(tagsFilter);
+        totalItems = await Course.countDocuments(isPublishedFilter)
+                                .countDocuments(tagsFilter)
+                                .countDocuments(categoryFilter);
 
     } else {
         // If both keyword and tags are provided
-        courses = await Course.find({
-            $and: [
-                {
-                    $or: searchAllFilter
-                },
-                tagsFilter
-            ]
-        })
-        .skip(skip)
-        .limit(limit);
-        totalItems = await Course.countDocuments({
-            $and: [
-                {
-                    $or: searchAllFilter
-                },
-                tagsFilter
-            ]
-        });
+        courses = await Course.find(isPublishedFilter)
+                                .find({
+                                    $and: [
+                                        {
+                                            $or: searchAllFilter
+                                        },
+                                        tagsFilter
+                                    ]
+                                }
+                            )
+                            .find(categoryFilter)
+                            .skip(skip)
+                            .limit(limit);
+        totalItems = await Course.countDocuments(isPublishedFilter)
+                                .countDocuments({
+                                    $and: [
+                                        {
+                                            $or: searchAllFilter
+                                        },
+                                        tagsFilter
+                                    ]
+                                }
+                            )
+                            .countDocuments(categoryFilter);
     }
     return {
         courses,
@@ -109,6 +137,10 @@ const addQuizToCourse = async (courseId, quizId) => {
     return await course.save();
 }
 
+const getAllCourses = async () => {
+    return await Course.find();
+}
+
 
 module.exports = {
   create,
@@ -118,5 +150,6 @@ module.exports = {
   deleteCourseById,
   getCourseByCreatorId,
   removeQuizFromCourse,
-  addQuizToCourse
+  addQuizToCourse,
+  getAllCourses
 };
