@@ -157,10 +157,8 @@ const updateQuiz = catchAsync(async (req, res) => {
         const updatedQuestions = await questionController.updateMultipleQuestions(questions);
         req.body.questions = updatedQuestions;
     }
-
-    title = title !== null ? title : quiz.title;
-    description = description !== null ? description : quiz.description;
-
+    title = title != null ? title : quiz.title;
+    description = description != null ? description : quiz.description;
     const response = await quizService.updateQuiz(quizId, courseId, title, description);
     res.status(httpStatus.OK).send(response);
 });
