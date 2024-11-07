@@ -6,7 +6,9 @@ const ApiError = require("../utils/ApiError");
 
 const roleRouteMap = {create: [roles.ADMIN, roles.CREATOR],
     search: [roles.ADMIN, roles.CREATOR, roles.GUEST, roles.LEARNER],
-    update: [roles.CREATOR, roles.ADMIN]
+    update: [roles.CREATOR, roles.ADMIN],
+    learner: [roles.ADMIN, roles.LEARNER],
+    learnerNcreator: [roles.ADMIN, roles.LEARNER, roles.CREATOR]
 }
 
 const requiredRoles = (rolesKey) => catchAsync(async (req, res, next) => {

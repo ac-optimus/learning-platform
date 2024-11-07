@@ -1,5 +1,5 @@
 const httpStatus = require("http-status");
-const {chapterService, courseService} = require("../services");
+const {chapterService, courseService, couseEnrollService} = require("../services");
 const  ApiError  = require("../utils/ApiError");
 const catchAsync = require("../utils/catchAsync");
 
@@ -72,7 +72,19 @@ const getChaptersByCourseId = catchAsync(async (req, res) => {
     const course = await courseService.getCourseByCourseId(courseId)
     if (!course)
       throw new ApiError(httpStatus.BAD_REQUEST, "Course not found")
-    const chapters = await chapterService.getChaptersByCourseId(courseId)
+    if (!course.isPublished && (course.creator != req.user._id)) {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'Course is not published yet')
+    }
+
+    let chapters = await chapterService.getChaptersByCourseId(courseId)
+
+    const userId = req.user._id;
+    const courseEnroll = await couseEnrollService.getEnrolledLearnerForCourse(courseId) || [];
+    const isUserEnrolled = courseEnroll.learnerIds.includes(userId);
+    if (!isUserEnrolled && (course.creator != req.user._id)) {
+      chapters = chapters.filter(chapter => chapter.isFree);
+      console.log("Returning only free chapters");
+    }
     res.status(httpStatus.OK).send({'courseId': courseId, 
                                         'chapters': chapters})
 });
