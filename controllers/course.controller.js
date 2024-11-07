@@ -4,6 +4,8 @@ const  ApiError  = require("../utils/ApiError");
 const catchAsync = require("../utils/catchAsync");
 const quizService = require("../services/quiz.service");
 const chapterService = require("../services/chapter.service");
+const courseEnrollService = require("../services/courseEnroll.service");
+
 
 /**
  * create course
@@ -19,6 +21,10 @@ const create = catchAsync(async (req, res) => {
     if (req.body.creator != req.user._id)
       throw new ApiError(httpStatus.BAD_GATEWAY, "creator field not same as the user name")
     let course = await courseService.create(req.body);
+    let enrollment = await courseEnrollService.createEnrollmentForCourse(course._id, [])
+    if (!enrollment) {
+      throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, 'Can not create enrollment object')
+    }
     res.status(httpStatus.CREATED).send(course)
 });
 
@@ -129,17 +135,20 @@ const updateCourseTags = (course, addTags, removeTags) => {
 
 const deleteCourse = catchAsync(async (req, res) => {
   const { courseId } = req.params;
+
   let response = await courseService.deleteCourseById(courseId);
+  if (!response)
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, "Course not found")
   const deleteQuiz = await quizService.deleteQuizByCourseId(courseId);
   if (!deleteQuiz)
-    throw new ApiError(httpStatus.BAD_REQUEST, "Can not delete quizes for this course")
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, "Can not delete quizes for this course")
   const deleteChapter = await chapterService.deleteChapterByCourseId(courseId);
   if (!deleteChapter)
-    throw new ApiError(httpStatus.BAD_REQUEST, "Can not delete chapters for this course")
-
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, "Can not delete chapters for this course")
+  const deleteEnrollment = await courseEnrollService.deleteCourseEnrollment(courseId);
   if (!response)
-    throw new ApiError(httpStatus.BAD_REQUEST, "Course not found")
-  res.status(httpStatus.OK).send(response);
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, "Course not found")
+  res.status(httpStatus.OK).send({'course':response, 'enrollments':deleteEnrollment.learnerIds});
 })
 
 
@@ -160,6 +169,8 @@ const categoryAndTags = catchAsync(async (req, res) => {
     categoryTagsMap.set(category, [...new Set(tags)]);
   });
   response = Array.from(categoryTagsMap.entries()).reduce((acc, [category, tags]) => {
+    if (category == null)
+      acc['others'] = tags
     acc[category] = tags;
     return acc;
   }, {});
