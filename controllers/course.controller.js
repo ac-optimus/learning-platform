@@ -169,9 +169,12 @@ const categoryAndTags = catchAsync(async (req, res) => {
     categoryTagsMap.set(category, [...new Set(tags)]);
   });
   response = Array.from(categoryTagsMap.entries()).reduce((acc, [category, tags]) => {
-    if (category == null)
-      acc['others'] = tags
-    acc[category] = tags;
+    if (category == null) {
+      acc['others'] = tags;
+    } else if (category !== undefined) {
+      acc[category] = tags;
+    }
+
     return acc;
   }, {});
   res.status(httpStatus.OK).send(response);
