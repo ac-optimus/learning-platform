@@ -79,8 +79,14 @@ const getChaptersByCourseId = catchAsync(async (req, res) => {
     let chapters = await chapterService.getChaptersByCourseId(courseId)
 
     const userId = req.user._id;
-    const courseEnroll = await couseEnrollService.getEnrolledLearnerForCourse(courseId) || [];
-    const isUserEnrolled = courseEnroll.learnerIds.includes(userId);
+    const courseEnroll = await couseEnrollService.getEnrolledLearnerForCourse(courseId);
+    if (!courseEnroll)
+      isUserEnrolled = []
+    else
+      isUserEnrolled = courseEnroll.learnerIds.includes(userId)
+    // filter out published chapters
+    if (course.creator != req.user._id)
+      chapters = chapters.filter(chapter => chapter.isPublished);
     if (!isUserEnrolled && (course.creator != req.user._id)) {
       chapters = chapters.filter(chapter => chapter.isFree);
       console.log("Returning only free chapters");
