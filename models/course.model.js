@@ -40,6 +40,10 @@ const courseSchema = new mongoose.Schema({
             ref: 'Quiz',
             default: []
         }],
+    contentOrder: [{ 
+        type: mongoose.Schema.Types.ObjectId, 
+        default: []
+    }],
     isPublished: {
         type: Boolean,
         default: false,

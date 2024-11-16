@@ -8,7 +8,8 @@ const roleRouteMap = {create: [roles.ADMIN, roles.CREATOR],
     search: [roles.ADMIN, roles.CREATOR, roles.GUEST, roles.LEARNER],
     update: [roles.CREATOR, roles.ADMIN],
     learner: [roles.ADMIN, roles.LEARNER],
-    learnerNcreator: [roles.ADMIN, roles.LEARNER, roles.CREATOR]
+    learnerNcreator: [roles.ADMIN, roles.LEARNER, roles.CREATOR],
+    admin:[roles.ADMIN]
 }
 
 const requiredRoles = (rolesKey) => catchAsync(async (req, res, next) => {

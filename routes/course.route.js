@@ -430,5 +430,46 @@ router.get("/categoryAndTags",
     requetsBodyLog,
     courseController.categoryAndTags)
 
+// admin routes
+router.get("/allCourses",
+    requiredRoles('admin'),
+    auth,
+    requetsBodyLog,
+    courseController.getAllCourses)
+
+router.get("/allCourseIds",
+    requiredRoles('admin'),
+    auth,
+    requetsBodyLog,
+    courseController.getAllCourseIds)
+
+router.post("/commission",
+    requiredRoles('admin'),
+    auth,
+    requetsBodyLog,
+    validate(courseValidation.setCourseCommission),
+    courseController.setCourseCommission)
+
+router.delete("/commission/:courseId",
+    requiredRoles('admin'),
+    auth,
+    requetsBodyLog,
+    validate(courseValidation.deleteCourseCommission),
+    courseController.deleteCourseCommission)
+
+router.put("/commission/:courseId",
+    requiredRoles('admin'),
+    auth,
+    requetsBodyLog,
+    validate(courseValidation.updateCourseCommission),
+    courseController.updateCourseCommission)
+
+
+router.get("/commission",
+    requiredRoles('admin'),
+    auth,
+    requetsBodyLog,
+    courseController.getCourseCommissions)
+
 
 module.exports = router;

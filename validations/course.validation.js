@@ -13,7 +13,8 @@ const courseCreate = {
       price: Joi.number().required(),
       chapterIds: Joi.array().items(Joi.string()),
       isPublished: Joi.string(),
-      category: Joi.string().custom(courseCategory).required()
+      category: Joi.string().custom(courseCategory).required(),
+      contentOrder: Joi.array().items(Joi.string())
 }).unknown(true),
 };
 
@@ -28,7 +29,8 @@ const courseUpdate = {
     removeTags: Joi.array().items(Joi.string()),
     addChapters: Joi.array().items(Joi.string()),
     removeChapters: Joi.array().items(Joi.string()),
-    isPublished: Joi.boolean()
+    isPublished: Joi.boolean(),
+    contentOrder: Joi.array().items(Joi.string())
 }).unknown(true),
 };
 
@@ -56,11 +58,53 @@ const searchCourse = {
   }).unknown(true)
 }
 
+const setCourseCommission = {
+  body: Joi.object().keys({
+    courseId: Joi.string().required().custom(objectId),
+    creatorShare: Joi.number().required().min(0).max(100).messages({
+      'number.min': 'Creator share cannot be less than 0',
+      'number.max': 'Creator share cannot be greater than 100'
+    })
+  }).unknown(true),
+}
+
+const getCommissionForCreator = {
+    query: Joi.object().keys({
+        creatorId: Joi.string().custom(objectId),
+        courseId: Joi.string().custom(objectId)
+    }).unknown(true).optional()
+
+}
+
+const deleteCourseCommission = {
+  params: Joi.object().keys({
+    courseId: Joi.string().required().custom(objectId)
+  }).unknown(true),
+};
+
+const updateCourseCommission = {
+  params: Joi.object().keys({
+    courseId: Joi.string().required().custom(objectId)
+  }).unknown(true),
+  body: Joi.object().keys({
+    creatorShare: Joi.number().required().min(0).max(100).messages({
+      'number.min': 'Creator share cannot be less than 0',
+      'number.max': 'Creator share cannot be greater than 100'
+    })
+  }).unknown(true),
+};
+
+
+
 module.exports = {
   courseCreate,
   courseUpdate,
   courseDelete,
   getCourse,
   getCourseByCreatorId,
-  searchCourse
+  searchCourse,
+  setCourseCommission,
+  getCommissionForCreator,
+  deleteCourseCommission,
+  updateCourseCommission
 };

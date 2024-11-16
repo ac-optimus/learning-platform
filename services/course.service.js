@@ -1,17 +1,20 @@
 const { Course } = require("../models");
+const { Commission } = require("../models");
+
 
 const create = async (course) => {
     return await Course.create(course);
 }
 
-const update = async (courseId, title, description, tags, chapterIds, isPublished) => {
+const update = async (courseId, title, description, tags, chapterIds, isPublished, contentOrder) => {
     let filter = { _id: courseId }
     await Course.updateOne(filter, { $set: { 
         title: title,
         description: description,
         tags: tags,
         chapterIds: chapterIds,
-        isPublished: isPublished
+        isPublished: isPublished,
+        contentOrder: contentOrder
         } 
     })
     return await Course.findOne({_id: courseId})
@@ -141,6 +144,52 @@ const getAllCourses = async () => {
     return await Course.find();
 }
 
+const setCourseCommissions = async(courseId, creator, creatorShare) => {
+    const commission = new Commission({
+        courseId: courseId,
+        creatorId: creator,
+        creatorShare: creatorShare
+    });
+    return Commission.create(commission);
+}
+const deleteCourseCommission = async (commissionId) => {
+    return await Commission.findByIdAndDelete(commissionId);
+}
+
+const updateCourseCommission = async (commission) => {
+    // const commission = await Commission.findById(commissionId);
+    // if (!commission) {
+    //     throw new Error("Commission not found");
+    // }
+    // commission.creatorShare = newCreatorShare;
+    return await commission.save();
+}
+
+
+
+const getCourseCommissions = async(creatorId, courseId) => {
+    let query = {};
+    const ObjectId = require('mongoose').Types.ObjectId;
+    if (creatorId) query.creatorId = new ObjectId(creatorId);
+    if (courseId) query.courseId = new ObjectId(courseId);
+    const commissions = await Commission.find(query);
+    return commissions;
+}
+
+const getCourseCommission = async (courseId) => {
+    return await Commission.findOne({ courseId: courseId });
+}
+
+
+// const getCommissionForCreator = async(creatorId, courseId) => {
+//     let query = {};
+//     if (creatorId) query.creator = creatorId;
+//     if (courseId) query.courseId = courseId;
+
+//     const commissions = await Commission.find(query);
+//     return commissions;
+// }
+
 
 module.exports = {
   create,
@@ -151,5 +200,11 @@ module.exports = {
   getCourseByCreatorId,
   removeQuizFromCourse,
   addQuizToCourse,
-  getAllCourses
+  getAllCourses,
+  setCourseCommissions,
+//   getCommissionForCreator,
+  getCourseCommissions,
+  getCourseCommission,
+  deleteCourseCommission,
+  updateCourseCommission
 };

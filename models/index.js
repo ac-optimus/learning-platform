@@ -5,3 +5,4 @@ module.exports.Question = require('./question.model').Question
 module.exports.Solution = require('./solution.model').Solution
 module.exports.Submission = require('./submission.model').Submission
 module.exports.CourseEnroll = require('./courseEnroll.model').CourseEnroll
+module.exports.Commission = require('./commission.model').Commission
