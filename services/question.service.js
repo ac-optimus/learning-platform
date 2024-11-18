@@ -12,12 +12,13 @@ const getQuestionById = async (questionId) => {
     return await Question.findById(questionId);
 };
 
-const updateQuestion = async (questionId, content, questionType, solution) => {
+const updateQuestion = async (questionId, content, questionType, solution, explanation) => {
     let filter = { _id: questionId }
     await Question.updateOne(filter, { $set: { 
         content: content,
         questionType: questionType,
-        solution: solution
+        solution: solution,
+        explanation: explanation
         } 
     })
     return await Question.findOne({_id: questionId})

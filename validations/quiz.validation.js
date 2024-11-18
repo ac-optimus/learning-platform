@@ -10,6 +10,7 @@ const quizCreate = {
         description: Joi.string().required(),
         questions: Joi.array().items(Joi.object().keys({
             content: Joi.string().required(),
+            explanation: Joi.string().optional(),
             questionType: Joi.string().custom(questionType).required(),
             solution: Joi.alternatives().try(Joi.string(), Joi.object({
                 solution: Joi.alternatives().try(Joi.string(), Joi.array().items(Joi.string())),
@@ -61,11 +62,16 @@ const quizUpdate = {
         questions: Joi.array().items(Joi.object().keys({
             questionId: Joi.string().custom(objectId).required(),
             content: Joi.string().optional(),
-            questionType: Joi.string().custom(questionType).required(),
+            explanation: Joi.string().optional(),
+            questionType: Joi.when('solution', {
+                is: Joi.exist(),
+                then: Joi.string().custom(questionType).required(),
+                otherwise: Joi.string().custom(questionType).optional()
+            }),
             solution: Joi.alternatives().try(Joi.string(), Joi.object({
                 solution: Joi.alternatives().try(Joi.string(), Joi.array().items(Joi.string())),
                 options: Joi.array().items(Joi.string())
-            })).required()
+            })).optional()
         })).optional(),
         title: Joi.string().optional(),
         description: Joi.string().optional(),
