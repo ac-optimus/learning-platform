@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const validate = require('../middlewares/validate');
-const auth = require('../middlewares/auth');
+const { auth } = require('../middlewares/auth');
 const requiredRoles = require("../middlewares/req.roles");
 const courseEnrollController = require('../controllers/courseEnroll.controller.js');
 const courseEnrollValidation = require('../validations/courseEnroll.validation');

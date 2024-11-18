@@ -35,7 +35,8 @@ const create = catchAsync(async (req, res) => {
  */
 const update = catchAsync(async (req, res) => {
   let {courseId, title, description, addTags, 
-    removeTags, addChapters, removeChapters, isPublished, contentOrder} = req.body;
+    removeTags, addChapters, removeChapters, isPublished, 
+    contentOrder, imageUrl, shortBio, isFree, price} = req.body;
   let course = await courseService.getCourseByCourseId(courseId)
   if (!course) 
     throw new ApiError(httpStatus.BAD_REQUEST, "Course not found")
@@ -49,6 +50,10 @@ const update = catchAsync(async (req, res) => {
   addChapters = addChapters!=null ? getObejectIdsFromIds(addChapters) : [];
   removeChapters = removeChapters!=null ? removeChapters : [];
   isPublished = isPublished!=null ? isPublished : course.isPublished
+  imageUrl = imageUrl!=null ? imageUrl : course.imageUrl
+  shortBio = shortBio!=null ? shortBio : course.shortBio
+  price = price!=null ? price : course.price
+  isFree = isFree!=null ? isFree : course.isFree
 
   contentOrder = contentOrder!=null ? contentOrder : [];
 
@@ -63,9 +68,8 @@ const update = catchAsync(async (req, res) => {
   let isValidContentOrder = contentOrder.every(id => combinedIds.includes(id));
   if (!isValidContentOrder)
     throw new ApiError(httpStatus.BAD_REQUEST, "Content order contains invalid IDs");
-
   let response = await courseService.update(courseId, title, description, 
-    course.tags, course.chapterIds, isPublished, contentOrder)
+    course.tags, course.chapterIds, isPublished, contentOrder, imageUrl, shortBio, isFree, price)
   res.status(httpStatus.OK).send(response);
 });
 

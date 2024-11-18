@@ -7,14 +7,15 @@ const courseCreate = {
       title: Joi.string().required(),
       description: Joi.string().required(),
       shortBio: Joi.string(),
-      image: Joi.string(),
+      imageUrl: Joi.string(),
       creator: Joi.string().required(),
       tags: Joi.array().items(Joi.string()),
       price: Joi.number().required(),
       chapterIds: Joi.array().items(Joi.string()),
       isPublished: Joi.string(),
       category: Joi.string().custom(courseCategory).required(),
-      contentOrder: Joi.array().items(Joi.string())
+      contentOrder: Joi.array().items(Joi.string()),
+      isFree: Joi.boolean()
 }).unknown(true),
 };
 
@@ -24,13 +25,15 @@ const courseUpdate = {
     title: Joi.string(),
     description: Joi.string(),
     shortBio: Joi.string(),
-    image: Joi.string(),
+    imageUrl: Joi.string(),
     addTags: Joi.array().items(Joi.string()),
     removeTags: Joi.array().items(Joi.string()),
+    price: Joi.number(),
     addChapters: Joi.array().items(Joi.string()),
     removeChapters: Joi.array().items(Joi.string()),
     isPublished: Joi.boolean(),
-    contentOrder: Joi.array().items(Joi.string())
+    contentOrder: Joi.array().items(Joi.string()),
+    isFree: Joi.boolean()
 }).unknown(true),
 };
 

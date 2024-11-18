@@ -49,15 +49,18 @@ const updateMultipleQuestions = async (questions) => {
         }
 
         updateQuestion.content = updateQuestion.content!=null ? updateQuestion.content : question.content;
-        updateQuestion.questionType = updateQuestion.questionType!=null ? updateQuestion.questionType : question.questionType;
-        if (updateQuestion.solution!=null) {
+        updateQuestion.explanation = updateQuestion.explanation!=null ? updateQuestion.explanation : question.explanation;
+        if (updateQuestion.solution == null && updateQuestion.questionType!=null)
+            throw new ApiError(httpStatus.BAD_REQUEST, 'Please pass new solution with new questionType')
+            
+        if (updateQuestion.solution!=null)
             validationSolution(updateQuestion.questionType, updateQuestion.solution);
-        } else {
-            throw new ApiError(httpStatus.BAD_REQUEST, "Solution is required for question type: " + updateQuestion.questionType);
-        }
+
         const solution = updateQuestion.solution!=null ? updateQuestion.solution : question.solution;
+        updateQuestion.questionType = updateQuestion.questionType!=null ? updateQuestion.questionType : question.questionType;
     
-        const response = await questionService.updateQuestion(updateQuestion.questionId, updateQuestion.content, updateQuestion.questionType, solution);
+        const response = await questionService.updateQuestion(updateQuestion.questionId, updateQuestion.content, 
+                                                                updateQuestion.questionType, solution, updateQuestion.explanation);
         if (!response) {
             throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, "Failed to update question");
         }

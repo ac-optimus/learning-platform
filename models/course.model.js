@@ -52,6 +52,10 @@ const courseSchema = new mongoose.Schema({
         type: String,
         enum: Object.values(CourseCategory),
         required: true
+    },
+    isFree: {
+        type: Boolean,
+        default: false
     }
 }, {
     timestamps: true,

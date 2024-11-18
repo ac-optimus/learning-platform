@@ -12,6 +12,9 @@ const envVarsSchema = Joi.object()
     PORT: Joi.number().default(3000),
     MONGODB_URL: Joi.string().required().description("Mongo DB url"),
     LOGIN_SERVICE: Joi.string().required(),
+    LOGIN_SERVICE_ROOT: Joi.string().required(),
+    ADMIN_EMAIL: Joi.string().required(),
+    ADMIN_PASSWORD: Joi.string().required(),
     CLOUDINARY_CLOUD_NAME: Joi.string().required(),
     CLOUDINARY_API_KEY: Joi.string().required(),
     CLOUDINARY_SECRET_KEY: Joi.string().required()
@@ -36,6 +39,11 @@ module.exports = {
     },
   },
   loginservice: {
-    url: envVars.LOGIN_SERVICE
+    url: envVars.LOGIN_SERVICE,
+    baseurl: envVars.LOGIN_SERVICE_ROOT
+  },
+  admin: {
+    email: envVars.ADMIN_EMAIL,
+    password: envVars.ADMIN_PASSWORD
   }
 };

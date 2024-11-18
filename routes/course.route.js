@@ -1,7 +1,7 @@
 const express = require("express");
 const validate = require("../middlewares/validate");
 const courseValidation = require("../validations/course.validation");
-const auth = require("../middlewares/auth");
+const { auth } = require("../middlewares/auth");
 const courseController = require("../controllers/course.controller");
 const requiredRoles = require("../middlewares/req.roles");
 const router = express.Router();

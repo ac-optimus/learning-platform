@@ -27,6 +27,10 @@ const questionSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Course',
         required: true
+    },
+    explanation: {
+        type: String,
+        required: false
     }
 }, {
     timestamps: true,

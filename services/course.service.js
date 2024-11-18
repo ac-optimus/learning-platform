@@ -6,7 +6,8 @@ const create = async (course) => {
     return await Course.create(course);
 }
 
-const update = async (courseId, title, description, tags, chapterIds, isPublished, contentOrder) => {
+const update = async (courseId, title, description, tags, chapterIds, 
+    isPublished, contentOrder, imageUrl, shortBio, isFree, price) => {
     let filter = { _id: courseId }
     await Course.updateOne(filter, { $set: { 
         title: title,
@@ -14,7 +15,11 @@ const update = async (courseId, title, description, tags, chapterIds, isPublishe
         tags: tags,
         chapterIds: chapterIds,
         isPublished: isPublished,
-        contentOrder: contentOrder
+        contentOrder: contentOrder,
+        imageUrl: imageUrl,
+        shortBio: shortBio,
+        isFree: isFree,
+        price: price
         } 
     })
     return await Course.findOne({_id: courseId})
