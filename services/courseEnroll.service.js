@@ -1,6 +1,8 @@
 const httpStatus = require("http-status");
 const { CourseEnroll } = require("../models");
 const ApiError = require("../utils/ApiError");
+const courseEnrollService = require("../services/courseEnroll.service");
+
 
 const createEnrollmentForCourse = async (courseId, learnerIds) => {
     const newEnrollment = new CourseEnroll({
@@ -12,7 +14,12 @@ const createEnrollmentForCourse = async (courseId, learnerIds) => {
 
 const enrollLearnerToCourse = async (courseId, learnerId) => {
     const existingEnrolls = await CourseEnroll.findOne({ courseId: courseId });
-    if (!existingEnrolls.learnerIds.includes(learnerId)) {
+    if (!existingEnrolls) {
+        let enrollment = await createEnrollmentForCourse(courseId, [learnerId])
+        if (!enrollment) {
+          throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, 'Can not create enrollment object')
+        }
+    } else if (!existingEnrolls.learnerIds.includes(learnerId)) {
         existingEnrolls.learnerIds.push(learnerId);
         await existingEnrolls.save();
     } else 
