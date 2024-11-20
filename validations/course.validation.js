@@ -33,7 +33,8 @@ const courseUpdate = {
     removeChapters: Joi.array().items(Joi.string()),
     isPublished: Joi.boolean(),
     contentOrder: Joi.array().items(Joi.string()),
-    isFree: Joi.boolean()
+    isFree: Joi.boolean(),
+    category: Joi.string().custom(courseCategory)
 }).unknown(true),
 };
 
