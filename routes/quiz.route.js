@@ -204,14 +204,14 @@ router.get("/:courseId",
 
 
 router.post("/submit/:courseId/:quizId",
-    requiredRoles('update'),
+    requiredRoles('learnerNcreator'),
     auth,
     requetsBodyLog,
     validate(quizValidation.quizSubmit),
     quizController.submitQuiz)
 
 router.get("/submissions/:courseId/:quizId",
-    requiredRoles('update'),
+    requiredRoles('learnerNcreator'),
     auth,
     requetsBodyLog,
     validate(quizValidation.quizGetSubmissions),
