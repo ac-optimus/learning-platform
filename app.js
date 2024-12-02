@@ -3,8 +3,7 @@ const httpStatus = require("http-status");
 const routes = require("./routes");
 const cors = require("cors");
 const swaggerSetup = require('./swagger');
-
-
+const { adminRouter } = require('./routes/admin.route.js');
 const app = express();
 app.use(cors());
 app.get("/", (req, res, next) => {
@@ -13,6 +12,7 @@ app.get("/", (req, res, next) => {
 app.use(express.json());
 swaggerSetup(app);
 app.use("/v1", routes);
+app.use("/admin", adminRouter);
 app.use((req, res, next) => {
   res.status(httpStatus.NOT_FOUND).send({"message":"Not found"});
 });

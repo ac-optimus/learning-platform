@@ -5,8 +5,7 @@ const expressListRoutes = require('express-list-routes');
 const { authenicateAdmin } = require('./middlewares/auth')
 
 
-mongoose.set('useCreateIndex', true);
-mongoose.connect(config.mongoose.url, {useUnifiedTopology: true,useNewUrlParser: true})
+mongoose.connect(config.mongoose.url, {})
               .then(() =>{
                 console.log("Connected to MongoDB");})
               .catch(() => console.log("cannot connect to mongodb"));
