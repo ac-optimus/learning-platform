@@ -20,6 +20,7 @@ const requetsBodyLog = (req, res, next) => {
  *     tags: [Courses]
  *     security:
  *       - bearerAuth: []
+ *     description: Requires 'creator' role
  *     requestBody:
  *       required: true
  *       content:
@@ -47,6 +48,7 @@ const requetsBodyLog = (req, res, next) => {
  *         - description
  *         - creator
  *         - price
+ *         - category
  *       properties:
  *         title:
  *           type: string
@@ -54,7 +56,7 @@ const requetsBodyLog = (req, res, next) => {
  *           type: string
  *         shortBio:
  *           type: string
- *         image:
+ *         imageUrl:
  *           type: string
  *         creator:
  *           type: string
@@ -68,7 +70,20 @@ const requetsBodyLog = (req, res, next) => {
  *           type: array
  *           items:
  *             type: string
+ *         quizIds:
+ *           type: array
+ *           items:
+ *             type: string
+ *         contentOrder:
+ *           type: array
+ *           items:
+ *             type: string
  *         isPublished:
+ *           type: boolean
+ *         category:
+ *           type: string
+ *           enum: [ "TECHNOLOGY", "BUSINESS", "FINANCE", "ARTS", "HEALTH", "OTHER" ]
+ *         isFree:
  *           type: boolean
  */
 router.post("/",
@@ -86,6 +101,7 @@ router.post("/",
  *     tags: [Courses]
  *     security:
  *       - bearerAuth: []
+ *     description: Requires 'creator' role
  *     requestBody:
  *       required: true
  *       content:
@@ -126,27 +142,45 @@ router.post("/",
  *         shortBio:
  *           type: string
  *           required: false
- *         addTags:
+ *         imageUrl:
+ *           type: string
+ *           required: false
+ *         creator:
+ *           type: string
+ *           required: false
+ *         tags:
  *           type: array
  *           required: false
  *           items:
  *             type: string
- *         removeTags:
+ *         price:
+ *           type: number
+ *           required: false
+ *         chapterIds:
  *           type: array
  *           required: false
  *           items:
  *             type: string
- *         addChapters:
+ *         quizIds:
  *           type: array
  *           required: false
  *           items:
  *             type: string
- *         removeChapters:
+ *         contentOrder:
  *           type: array
+ *           required: false
  *           items:
  *             type: string
  *         isPublished:
  *           type: boolean
+ *           required: false
+ *         category:
+ *           type: string
+ *           required: false
+ *           enum: [SOFTWARE, ELECTRICAL, MATERIALS_SCIENCE, NETWORKING, OTHER]
+ *         isFree:
+ *           type: boolean
+ *           required: false
  *     Course:
  *       type: object
  *       properties:
@@ -158,7 +192,7 @@ router.post("/",
  *           type: string
  *         shortBio:
  *           type: string
- *         image:
+ *         imageUrl:
  *           type: string
  *         creator:
  *           type: string
@@ -166,11 +200,26 @@ router.post("/",
  *           type: array
  *           items:
  *             type: string
+ *         price:
+ *           type: number
  *         chapterIds:
  *           type: array
  *           items:
  *             type: string
+ *         quizIds:
+ *           type: array
+ *           items:
+ *             type: string
+ *         contentOrder:
+ *           type: array
+ *           items:
+ *             type: string
  *         isPublished:
+ *           type: boolean
+ *         category:
+ *           type: string
+ *           enum: [SOFTWARE, ELECTRICAL, MATERIALS_SCIENCE, NETWORKING, OTHER]
+ *         isFree:
  *           type: boolean
  *   responses:
  *     BadRequest:
@@ -220,6 +269,7 @@ router.put("/",
  *         description: ID of the course to delete
  *     security:
  *       - bearerAuth: []
+ *     description: Requires 'creator' role
  *     responses:
  *       200:
  *         description: Course successfully deleted
@@ -277,6 +327,7 @@ router.delete("/:courseId",
  *   get:
  *     summary: Search for courses
  *     tags: [Courses]
+ *     description: No Auth
  *     parameters:
  *       - in: query
  *         name: keyword
@@ -337,6 +388,7 @@ router.get("/search",
  *   get:
  *     summary: Get a course by its ID
  *     tags: [Courses]
+ *     description: No Auth 'search' role
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -372,6 +424,7 @@ router.get("/search/:courseId",
  *     tags: [Courses]
  *     security:
  *       - bearerAuth: []
+ *     description: Required role 'creator'
  *     parameters:
  *       - in: path
  *         name: creatorId
@@ -425,23 +478,163 @@ router.get("/fetchCourses/:creatorId",
     validate(courseValidation.getCourseByCreatorId),
     courseController.searchCourseByCreatorId)
 
+/**
+ * @swagger
+ * /courses/categoryAndTags:
+ *   get:
+ *     summary: Retrieve categories and tags
+ *     tags: [Courses]
+ *     security:
+ *       - bearerAuth: []
+ *     description: No Auth
+ *     responses:
+ *       200:
+ *         description: Successful retrieval of categories and tags
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 others:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                     example: "web"
+ *                 ELECTRICAL:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                     example: "Algorithm"
+ *                 MATERIALS_SCIENCE:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                     example: "MS"
+ *                 NETWORKING:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                     example: "mern"
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ */
 router.get("/categoryAndTags",
     requiredRoles('search'),
     requetsBodyLog,
     courseController.categoryAndTags)
 
-// admin routes
+/**
+ * @swagger
+ * /courses/allCourses:
+ *   get:
+ *     summary: Retrieve details of a specific course
+ *     tags: [Courses]
+ *     security:
+ *       - bearerAuth: []
+ *     description: Required 'admin' role
+ *     responses:
+ *       200:
+ *         description: Successful retrieval of course details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Course'
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ */
 router.get("/allCourses",
     requiredRoles('admin'),
     auth,
     requetsBodyLog,
     courseController.getAllCourses)
 
+/**
+ * @swagger
+ * /courses/allCourses:
+ *   get:
+ *     summary: Retrieve all courses
+ *     tags: [Courses]
+ *     security:
+ *       - bearerAuth: []
+ *     description: Requires 'admin' role
+ *     responses:
+ *       200:
+ *         description: Successful retrieval of all courses
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Course'
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ */
 router.get("/allCourseIds",
     requiredRoles('admin'),
     auth,
     requetsBodyLog,
     courseController.getAllCourseIds)
+/**
+ * @swagger
+ * /courses/commission:
+ *   post:
+ *     summary: Set a course commission
+ *     tags: [Courses]
+ *     security:
+ *       - bearerAuth: []
+ *     description: Requires 'admin' role
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - courseId
+ *               - creatorShare
+ *             properties:
+ *               courseId:
+ *                 type: string
+ *                 description: "The unique identifier of the course"
+ *               creatorShare:
+ *                 type: number
+ *                 description: "Percentage of the course revenue allocated to the creator"
+ *                 minimum: 0
+ *                 maximum: 100
+ *     responses:
+ *       200:
+ *         description: Successfully set course commission
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/CourseCommission'
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       404:
+ *         description: Course not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Course not found"
+ */
 
 router.post("/commission",
     requiredRoles('admin'),
@@ -450,6 +643,31 @@ router.post("/commission",
     validate(courseValidation.setCourseCommission),
     courseController.setCourseCommission)
 
+/**
+ * @swagger
+ * /courses/commission:
+ *   get:
+ *     summary: Retrieve all course commissions
+ *     tags: [Courses]
+ *     security:
+ *       - bearerAuth: []
+ *     description: Requires 'admin' role
+ *     responses:
+ *       200:
+ *         description: Successful retrieval of course commissions
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/CourseCommission'
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ */
 router.delete("/commission/:courseId",
     requiredRoles('admin'),
     auth,
@@ -457,6 +675,58 @@ router.delete("/commission/:courseId",
     validate(courseValidation.deleteCourseCommission),
     courseController.deleteCourseCommission)
 
+/**
+ * @swagger
+ * /courses/commission/{courseId}:
+ *   put:
+ *     summary: Update a course commission
+ *     tags: [Courses]
+ *     security:
+ *       - bearerAuth: []
+ *     description: Requires 'admin' role
+ *     parameters:
+ *       - in: path
+ *         name: courseId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The course ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - creatorShare
+ *             properties:
+ *               creatorShare:
+ *                 type: number
+ *                 description: "Percentage of the course revenue allocated to the creator"
+ *                 minimum: 0
+ *                 maximum: 100
+ *     responses:
+ *       200:
+ *         description: Successfully updated course commission
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/CourseCommission'
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       404:
+ *         description: No commission found for this course
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "No commission found for this course"
+ */
 router.put("/commission/:courseId",
     requiredRoles('admin'),
     auth,
@@ -465,6 +735,35 @@ router.put("/commission/:courseId",
     courseController.updateCourseCommission)
 
 
+/**
+ * @swagger
+ * /courses/commission:
+ *   get:
+ *     summary: Retrieve all course commissions
+ *     tags: [Courses]
+ *     security:
+ *       - bearerAuth: []
+ *     description: Requires 'admin' role
+ *     responses:
+ *       200:
+ *         description: Successful retrieval of all course commissions
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/CourseCommission'
+ *               example:
+ *                 - _id: "67374172c8dfff33afeaa692"
+ *                   courseId: "673089b4081c6e275282d180"
+ *                   creatorId: "66fe365763d7450003e4ef5e"
+ *                   creatorShare: 60
+ *                   createdAt: "2024-11-15T12:41:22.521Z"
+ *                   updatedAt: "2024-11-25T12:27:07.974Z"
+ *                   __v: 0
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ */
 router.get("/commission",
     requiredRoles('admin'),
     auth,
