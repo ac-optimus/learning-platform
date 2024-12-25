@@ -5,7 +5,6 @@ const expressListRoutes = require('express-list-routes');
 const { authenicateAdmin } = require('./middlewares/auth')
 
 
-console.log(config.mongoose.url);
 mongoose.connect(config.mongoose.url, {
                       useNewUrlParser: true,
                       useUnifiedTopology: true,
