@@ -23,7 +23,7 @@ const createQuiz = catchAsync(async (req, res) => {
         throw new ApiError(httpStatus.FORBIDDEN, "User not allowed to create a quiz for this course.");
     }
     // random number generator for quiz id same as mongoose id
-    const quizId = mongoose.Types.ObjectId();
+    const quizId = new mongoose.Types.ObjectId();
 
     if (questions) {
         const createdQuestions = await questionController.createMultipleQuestions(questions, quizId, courseId, req.user._id);
